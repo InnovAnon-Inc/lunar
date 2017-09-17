@@ -17,25 +17,26 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301, USA.    */
 
-#include <time.h>
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "watdefs.h"
-#include "lunar.h"
-#include "date.h"
+#include <time.h>
+
+#include <math.h>
+
 #include "afuncs.h"
+#include "date.h"
+#include "lunar.h"
 #include "riseset3.h"
+#include "watdefs.h"
 
-const static double pi =
-     3.1415926535897932384626433832795028841971693993751058209749445923078;
+#include <lunar2.h>
 
-static void get_rise_set_times( double *rise_set, const int planet_no,
-                  double jd,
-                  const double observer_lat, const double observer_lon,
-                  const char *vsop_data)
-{
+__attribute__ ((leaf, nonnull (1, 6), nothrow))
+static void get_rise_set_times (
+   double *rise_set, const int planet_no,
+   double jd,
+   const double observer_lat, const double observer_lon,
+   const char *vsop_data) {
    int i;
 
                                     /* Mark both the rise and set times     */
@@ -59,38 +60,6 @@ static void get_rise_set_times( double *rise_set, const int planet_no,
       }
 }
 
-#ifdef _MSC_VER
-     /* Microsoft Visual C/C++ has no snprintf.  Yes,  you read that      */
-     /* correctly.  MSVC has an _snprintf which doesn't add a '\0' at the */
-     /* end if max_len bytes are written.  You can't pass a NULL string   */
-     /* to determine the necessary buffer size.  The following, however,  */
-     /* is a "good enough" replacement:  for a non-NULL string, the       */
-     /* output will be "correct" (the '\0' will always be present and in  */
-     /* the right place).  The only deviation from "proper" sprintf() is  */
-     /* that the maximum return value is max_len;  you can never know how */
-     /* many bytes "should" have been written.                            */
-     /*   Somewhat ancient MSVCs don't even have vsnprintf;  you have to  */
-     /* use vsprintf and work things out so you aren't overwriting the    */
-     /* end of the buffer.                                                */
-#include <stdarg.h>
-
-int snprintf( char *string, const size_t max_len, const char *format, ...)
-{
-   va_list argptr;
-   int rval;
-
-   va_start( argptr, format);
-#if _MSC_VER <= 1100
-   rval = vsprintf( string, format, argptr);
-#else
-   rval = vsnprintf( string, max_len, format, argptr);
-#endif
-   string[max_len - 1] = '\0';
-   va_end( argptr);
-   return( rval);
-}
-#endif    /* #ifdef _MSC_VER */
-
    /* The 'quadrant' function helps in figuring out dates of lunar phases
 and solstices/equinoxes.  If the solar longitude is in one quadrant at
 the start of a day,  but in a different quadrant at the end of a day,
@@ -103,6 +72,7 @@ been a lunar phase change during that day.
 events.  The code just checks for a quadrant change and reports the
 corresponding event. */
 
+__attribute__ ((const, nothrow, warn_unused_result))
 static int quadrant( double angle)
 {
    angle = fmod( angle, 2. * pi);
@@ -111,29 +81,31 @@ static int quadrant( double angle)
    return( (int)( angle * 2. / pi));
 }
 
-int main( int argc, char **argv)
-{
+__attribute__ ((nothrow, warn_unused_result))
+int get_table (
+   int year, double lon, double lat,
+   int month_start, int month_end, int time_zone) {
    char *vsop_data = load_file_into_memory( "vsop.bin", NULL);
-   int i, year = atoi( argv[1]);
-   int month_start = 1, month_end = 12, month;
-   const double observer_lon = -69.90 * pi / 180.;
-   const double observer_lat = 44.01 * pi / 180.;
+   int i/*, year = atoi( argv[1])*/;
+   int /*month_start = 1, month_end = 12,*/ month;
+   const double observer_lon = /*-69.90*/lon * pi / 180.;
+   const double observer_lat = /*44.01*/lat * pi / 180.;
 
    if( !vsop_data)
       {
-      printf( "VSOP.BIN wasn't loaded.\n");
+      /*printf( "VSOP.BIN wasn't loaded.\n");*/
       return( -1);
       }
 
-   if( argc > 2)        /* month specified,  rather than "entire year" */
-      month_start = month_end = atoi( argv[2]);
+   /*if( argc > 2)*/        /* month specified,  rather than "entire year" */
+      /*month_start = month_end = atoi( argv[2]);*/
 
-   printf( "       Sun          Moon\n");
-   printf( "Day  Rise Set     Rise Set\n");
+   /*printf( "       Sun          Moon\n");
+   printf( "Day  Rise Set     Rise Set\n");*/
    for( month = month_start; month <= month_end; month++)
       {
       long jd_start, jd_end;
-      const int time_zone = -5;
+      /*const int time_zone = -5;*/
 
       jd_start = dmy_to_day( 1, month, year, 0);
       if( month == 12)
@@ -147,24 +119,25 @@ int main( int argc, char **argv)
          double rise_set[4];
          double lunar_lon[2], solar_lon[2];
          double jd = (double)( jd_start + i) - .5 - (double)time_zone / 24.;
-         char buff[80];
+         /*char buff[80];*/
          int j, quad0, quad1;
 
-         memset( buff, 0, 40);
+         /*memset( buff, 0, 40);*/
          get_rise_set_times( rise_set, 3,  jd, observer_lat, observer_lon,
                                                                 vsop_data);
          get_rise_set_times( rise_set + 2, 10, jd, observer_lat, observer_lon,
                                                                 vsop_data);
-         if( (jd_start + i) % 7 == 6)        /* Sunday */
-            strcpy( buff, "Su");
+         /*if( (jd_start + i) % 7 == 6)*/        /* Sunday */
+            /*strcpy( buff, "Su");
          else
-            snprintf( buff, 3, "%2d", i + 1);
+            snprintf( buff, 3, "%2d", i + 1);*/
          for( j = 0; j < 4; j++)
             {
-            static const int offsets[5] = { 4, 10, 17, 23, 29 };
+            /*static const int offsets[5] = { 4, 10, 17, 23, 29 };*/
 
             if( rise_set[j] < 0.)
-               strcpy( buff + offsets[j], "--:--");
+               /*strcpy( buff + offsets[j], "--:--");*/
+               /* TODO insert NULL */
             else
                {
                int minutes;
@@ -173,8 +146,9 @@ int main( int argc, char **argv)
                fraction = rise_set[j] + .5 + (double)time_zone / 24.;
                minutes = (int)( (fraction - floor( fraction)) * 1440.0);
 
-               snprintf( buff + offsets[j], 6, "%02d:%02d",
-                                            minutes / 60, minutes % 60);
+               /*snprintf( buff + offsets[j], 6, "%02d:%02d",
+                                            minutes / 60, minutes % 60);*/
+               /* TODO insert ^^^ */
                }
             }
 
@@ -194,24 +168,24 @@ int main( int argc, char **argv)
          quad0 = quadrant( lunar_lon[0] - solar_lon[0]);
          if( quad1 != quad0)
             {
-            const char *phase_names = "1Q FM 3Q NM";
+            /*const char *phase_names = "1Q FM 3Q NM";
 
-            memcpy( buff + 29, phase_names + quad0 * 3, 2);
+            memcpy( buff + 29, phase_names + quad0 * 3, 2);*/
             }
          quad1 = quadrant( solar_lon[1]);
          quad0 = quadrant( solar_lon[0]);
          if( quad1 != quad0)
             {
-            static const char *strings[4] =
+            /*static const char *strings[4] =
                             { "Summ Sol", "Autu Eq", "Wint Sol", "Vern Eq" };
 
-            strcpy( buff + 29, strings[quad0]);
+            strcpy( buff + 29, strings[quad0]);*/
             }
 
-         for( j = 0; j < 39; j++)
+         /*for( j = 0; j < 39; j++)
             if( !buff[j])
-               buff[j] = ' ';
-         printf( "%s\n", buff);
+               buff[j] = ' ';*/
+         /*printf( "%s\n", buff);*/
          }
       }
    free( vsop_data);
