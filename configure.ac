@@ -19,6 +19,9 @@ AC_CHECK_LIB([stdlib],[free,memcpy,memset])
 AC_CHECK_LIB([math],[fmod])
 AC_CHECK_LIB([lunar],[look_for_rise_set,fill_planet_data,load_file_into_memory])
 
+LIBLUNAR_LIBADD="`PATH=src:$PATH liblunar_config`"
+AC_SUBST(LIBLUNAR_LIBADD)
+
 INNOVANON_WARNINGS([])
 
 AC_OUTPUT

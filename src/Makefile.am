@@ -3,7 +3,8 @@ AM_CPPFLAGS = -D__STDC_INT64__
 SUBDIRS = ../glitter
 AM_CPPFLAGS += -I $(top_srcdir)/glitter/src
 
-include Makefile-LIBADD.inc
+#include Makefile-LIBADD.inc
+dist_bin_SCRIPTS = liblunar_config
 
 lib_LTLIBRARIES = liblunar2.la
 liblunar2_la_SOURCES = tables.c
