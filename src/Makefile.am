@@ -9,4 +9,4 @@ dist_bin_SCRIPTS = liblunar_config
 lib_LTLIBRARIES = liblunar2.la
 liblunar2_la_SOURCES = tables.c
 include_HEADERS = lunar2.h
-liblunar2_la_LIBADD = $(LIBLUNAR2_LIBADD)
+liblunar2_la_LIBADD = @LIBLUNAR2_LIBADD@
