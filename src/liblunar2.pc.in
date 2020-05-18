@@ -1,0 +1,17 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+#lunar2_utility=lunar2-test
+
+Name: @PACKAGE_NAME@
+Description: lunar2 library
+Version: @PACKAGE_VERSION@
+Libs: -L${libdir} -llunar2
+Cflags: -I${includedir}
+Requires: glitter
+Requires.private:
+#Libs.private: -lm
+Libs.private: @M_CFLAGS@ @M_LIBS@
+
